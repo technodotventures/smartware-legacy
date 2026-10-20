@@ -1,0 +1,41 @@
+{
+  "name": "smartware-procedure-replay-run-config-v1",
+  "description": "Run configuration for the three-arm procedure-replay benchmark. Pre-registered: it describes how the run is made, and no threshold lives here. Thresholds stay in contract-v1.json, which must not change.",
+  "contract": "benchmarks/procedure-replay/contract-v1.json",
+  "model": {
+    "id": "byok/deepseek/deepseek-flash",
+    "temperature": 0,
+    "seed": 20261020,
+    "policy": "One model id, temperature 0, one fixed seed and one per-run budget cap for A, B and C. No model change inside a run. Changing the model means re-running the benchmark, never editing recorded results.",
+    "recorded_at_run_time": "The provider model string returned by the endpoint is recorded in the results env block, not asserted here."
+  },
+  "budget": {
+    "max_usd_per_run": 2,
+    "max_turns_per_run": 12,
+    "max_tool_calls_per_run": 24
+  },
+  "tools": [
+    "read_file",
+    "write_file",
+    "run_self_test"
+  ],
+  "arms": {
+    "A": "task statement only, no memory",
+    "B": "Smartware procedure record plus its verification receipt, retrieved per run through the Smartware lane scoped to one client",
+    "C": "full procedure manual in the prompt"
+  },
+  "lane": {
+    "implementation": "src layer1 store plus layer3 search from the built package",
+    "scoped_to_single_client": true,
+    "correction_verb": "revise",
+    "erasure_verb": "FORGET.SCOPE across every configured lane"
+  },
+  "endpoint_env": [
+    "SMARTWARE_BENCH_BASE_URL",
+    "SMARTWARE_BENCH_API_KEY"
+  ],
+  "notes": [
+    "endpoint_env names the environment variables the run needs. No secret value is stored in this file or in any result file.",
+    "Token counts are measured per run and recorded in the results file. No arm JSON declares a token number."
+  ]
+}
